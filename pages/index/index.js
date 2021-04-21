@@ -141,12 +141,12 @@ Page({
     menuList: [
       {
         type: 'photo',
-        icon: '/static/images/chat/photo.png',
+        icon: '/img/photo.png',
         text: '照片'
       },
       {
         type: 'camera',
-        icon: '/static/images/chat/camera.png',
+        icon: '/img/camera.png',
         text: '拍摄'
       }
     ],
@@ -445,7 +445,7 @@ Page({
 
               receiveMsg.type = chatData.type; // 消息类型       
               receiveMsg.fromid = chatData.fromid; // 对方
-              let avatar = '/static/images/chat/my/avatar.png'
+              let avatar = '/img/my/avatar.png'
               receiveMsg.portrait = avatar // 头像
               let talkData = that.data.talkData
               if(chatData.fromid == that.data.toId){
