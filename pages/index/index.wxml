@@ -23,7 +23,7 @@
             <image class="adverse-head" src="{{from_head}}"></image>
           </block>
           <block wx:else>
-            <image class="adverse-head" src="{{to_head || '/static/images/chat/my/avatar.png'}}"></image>
+            <image class="adverse-head" src="{{to_head || '/img/my/avatar.png'}}"></image>
           </block>
           <view class="flex-wrap flex-center textBox {{item.fromid  == fromid ? 'text-green' : 'text-default'}}">
             <block wx:for="{{item.content}}" wx:for-item="it" wx:key="key">
@@ -54,10 +54,10 @@
       <view class="tools_label">
         <view class="tools_icon" bindtap="{{isRcord ?'':'onRecord'}}">
             <block wx:if="{{!isRcord}}">
-              <image src="/static/images/chat/voice.png" style="width: 60rpx; height: 60rpx"></image>
+              <image src="/img/voice.png" style="width: 60rpx; height: 60rpx"></image>
             </block>
             <block wx:else>
-              <image src="/static/images/chat/keyboard.png" style="width: 60rpx; height: 60rpx"></image>
+              <image src="/img/keyboard.png" style="width: 60rpx; height: 60rpx"></image>
             </block>
           </view>
         <view>
@@ -83,8 +83,8 @@
         </view>
         <!-- 发送按钮 -->
         <view class="tools_icon" bindtap="">
-            <image src="/static/images/chat/emoji.png" style="width: 60rpx; height: 60rpx;margin-right:15rpx" bindtap="showEmoji"></image>
-            <image src="/static/images/chat/add.png" style="width: 52rpx; height: 52rpx;margin-right:10rpx" bindtap="showFunction"></image>
+            <image src="/img/emoji.png" style="width: 60rpx; height: 60rpx;margin-right:15rpx" bindtap="showEmoji"></image>
+            <image src="/img/add.png" style="width: 52rpx; height: 52rpx;margin-right:10rpx" bindtap="showFunction"></image>
         </view>
       </view>
     </view>
