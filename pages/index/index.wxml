@@ -23,10 +23,10 @@
             <image class="adverse-head" src="{{from_head}}"></image>
           </block>
           <block wx:else>
-            <image class="adverse-head" src="{{to_head || '/img/my/avatar.png'}}"></image>
+            <image class="adverse-head" src="{{to_head || '/static/images/chat/my/avatar.png'}}"></image>
           </block>
           <view class="flex-wrap flex-center textBox {{item.fromid  == fromid ? 'text-green' : 'text-default'}}">
-            <block wx:for="{{item.content}}" wx:for-item="it">
+            <block wx:for="{{item.content}}" wx:for-item="it" wx:key="key">
               <block wx:if="{{it.type == 1}}">
                 {{it.content}}
               </block>
@@ -48,16 +48,16 @@
     <!-- <view style="height: {{toolViewHeight}}px"></view> -->
   </scroll-view>
   <!-- 底部输入框功能区 -->
-  <view class="tools" style="height: {{keyboardHeight ? keyboardHeight+toolHeight*2/3 : emojiShow ? 300+toolHeight/2 : functionShow ? 200+toolHeight/2 : ''}}px">
+  <view class="tools" style="height: {{emojiShow ? 300+toolHeight/2 : functionShow ? 200+toolHeight/2 : ''}}px">
     <!-- iphoneX安全区域 -->
     <view style="height: {{ emojiShow || functionShow ? '' : isIphoneXHeight}}rpx">
       <view class="tools_label">
         <view class="tools_icon" bindtap="{{isRcord ?'':'onRecord'}}">
             <block wx:if="{{!isRcord}}">
-              <image src="/img/voice.png" style="width: 60rpx; height: 60rpx"></image>
+              <image src="/static/images/chat/voice.png" style="width: 60rpx; height: 60rpx"></image>
             </block>
             <block wx:else>
-              <image src="/img/keyboard.png" style="width: 60rpx; height: 60rpx"></image>
+              <image src="/static/images/chat/keyboard.png" style="width: 60rpx; height: 60rpx"></image>
             </block>
           </view>
         <view>
@@ -67,30 +67,28 @@
             type="text" 
             name="input" 
             confirm-hold 
-            cursor-spacing="8px"
+            cursor-spacing="10px"
             value="{{comment}}" 
-            bindfocus="bindFocus"
-            bindblur="bindBlur"
             bindinput="onInput"
             confirm-type="send"
             focus="{{inputFocus}}"
             cursor="{{cursor}}" 
             bindconfirm="onConfirm"
+            bindfocus="onInputFocus"
+            bindblur="onInputBlur"
             bindkeyboardheightchange="onkeyboardHeightChange"
-            adjust-position="{{false}}"
-            cursor-spacing="20rpx"
           >
           </input>
           <view hidden="{{!isRcord}}" class="input record-view" hover-class="view-hover" catchtouchstart='onRecordStart' catchtouchend="onRecordEnd" >按住 说话</view>
         </view>
         <!-- 发送按钮 -->
         <view class="tools_icon" bindtap="">
-            <image src="/img/emoji.png" style="width: 60rpx; height: 60rpx;margin-right:15rpx" bindtap="showEmoji"></image>
-            <image src="/img/add.png" style="width: 52rpx; height: 52rpx;margin-right:10rpx" bindtap="showFunction"></image>
+            <image src="/static/images/chat/emoji.png" style="width: 60rpx; height: 60rpx;margin-right:15rpx" bindtap="showEmoji"></image>
+            <image src="/static/images/chat/add.png" style="width: 52rpx; height: 52rpx;margin-right:10rpx" bindtap="showFunction"></image>
         </view>
       </view>
     </view>
-    <view class="reply_panel_wrp" style="height: {{keyboardHeight ? keyboardHeight : emojiShow ? 300 : 200}}px;" hidden="{{!emojiShow && !functionShow}}">
+    <view class="reply_panel_wrp" style="height: {{emojiShow ? 300 : 200}}px;" hidden="{{!emojiShow && !functionShow}}">
       <view class="reply_panel {{emojiShow ? 'show': ''}}" hidden="{{!emojiShow}}">
         <mp-emoji source="{{emojiSource}}" class="mp-emoji" bindinsertemoji="insertEmoji" binddelemoji="deleteEmoji" bindsend="onsend"></mp-emoji>
       </view>
@@ -101,7 +99,7 @@
           style="height: 160px" 
           indicator-active-color="#8c8c8c">
           <swiper-item class="swiper-item flex-wrap">
-            <block wx:for="{{menuList}}">
+            <block wx:for="{{menuList}}" wx:key="key">
               <view class="flex-wrap flex-column flex-center item" bindtap="choosePic" data-type="{{item.type}}">
                 <view class="flex-wrap flex-center flex-c-center tool-view">
                   <image class="img" src="{{item.icon}}"></image>
