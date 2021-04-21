@@ -1,3 +1,5 @@
+
+
 //index.js
 //获取应用实例
 var recorder = wx.getRecorderManager();
@@ -131,19 +133,20 @@ Page({
     inputFocus: false, // 输入框自动对焦
     refreshStatus: true,
     menuHeight: 0,
-    toolViewHeight: '',
+    toolHeight:0,//输入框那一栏高度
+    toolViewHeight: '',//输入框下方功能区高度
     total_page: 5,
     page: 0,
     loading: false,
     menuList: [
       {
         type: 'photo',
-        icon: '/img/photo.png',
+        icon: '/static/images/chat/photo.png',
         text: '照片'
       },
       {
         type: 'camera',
-        icon: '/img/camera.png',
+        icon: '/static/images/chat/camera.png',
         text: '拍摄'
       }
     ],
@@ -194,13 +197,14 @@ Page({
   },
   // 展示emoji Panel
   showEmoji() {
-    if(!this.data._keyboardShow || this.data.emojiShow){
+    console.log('showEmoji');
+    if(!this.keyboardShow || this.data.emojiShow){
       this.setData({
         isRcord: false
       })
     }
     this.setData({
-      emojiShow: this.data._keyboardShow || !this.data.emojiShow,
+      emojiShow: this.keyboardShow || !this.data.emojiShow,
       functionShow: false,
       toolViewHeight: !this.data.emojiShow ? 300+this.data.toolHeight/2-this.data.isIphoneXHeight/2 : 0
     })
@@ -208,45 +212,32 @@ Page({
   },
   // 展示附件 Panel
   showFunction() {
-    if(!this.data._keyboardShow || this.data.functionShow){
+    if(!this.keyboardShow || this.data.functionShow){
       this.setData({
         isRcord: false
       })
     }
     this.setData({
-      functionShow: this.data._keyboardShow || !this.data.functionShow,
+      functionShow: this.keyboardShow || !this.data.functionShow,
       emojiShow: false,
       toolViewHeight: !this.data.functionShow ? 200+this.data.toolHeight/2-this.data.isIphoneXHeight/2 : 0
     })
     // this.pageUp()
   },
-  bindBlur(){
-    this.setData({
-      keyboardHeight: 0
-    })
+    
+  //获取焦点
+  onInputFocus(e){
+    this.keyboardShow = true;
+    console.log(e);
   },
-  // 页面上推
-  pageUp(){
-    const that = this
-    let query = wx.createSelectorQuery();
-    let toolViewHeight  = this.data.toolViewHeight
-    query.selectAll('.msg-box').boundingClientRect(function (rect) {
-      that.setData({
-        scrollTop: rect[0].height + toolViewHeight
-      })
-      console.log(that.data.scrollTop)
-    }).exec();
-  },
-  // 输入文字
-  bindInput(e){
-    let value = e.detail.value
-    this.setData({
-      InputContent: value,
-      scrollAnimation: true
-    })
+
+  onInputBlur(){
+    console.log('bindBlur')
+    this.keyboardShow = false;
   },
   // 监听键盘高度变化
   onkeyboardHeightChange(e) {
+    return;
     console.log('获取键盘高度')
     const that = this
     const {height} = e.detail
@@ -270,15 +261,41 @@ Page({
   // input输入
   onInput(e) {
     const value = e.detail.value
-    this.data.comment = value
+    this.data.comment = value;
+    this.data.cursor = value.length;
   },
   onConfirm() {
-    this.onsend()
+    this.onSend()
   },
+  // 发送消息
+  onSend() {
+    const comment = this.data.comment
+    const fromid = this.data.fromid
+    let obj = {fromid: fromid, content: [...this.parseEmoji(comment)]}
+    const talkData2 = this.data.talkData2
+    console.log(talkData2)
+
+    if(comment.length == ''){
+      wx.showToast({
+        title: '内容不能为空',
+        icon:'none'
+      });
+      return;
+    }
+
+    talkData2.unshift(obj)
+    this.setData({
+      talkData2,
+      comment: '' // 发送成功，清空输入框
+    })
+    this.pageUp()
+  },
+
   // 插入表情
   insertEmoji(evt) {
     const emotionName = evt.detail.emotionName
     const { cursor, comment } = this.data
+    console.log(`cursor:${cursor}`);
     const newComment =
       comment.slice(0, cursor) + emotionName + comment.slice(cursor)
     
@@ -288,20 +305,7 @@ Page({
     })
     console.log()
   },
-  // 发送消息
-  onsend() {
-    const comment = this.data.comment
-    const fromid = this.data.fromid
-    let obj = {fromid: fromid, content: [...this.parseEmoji(comment)]}
-    const talkData2 = this.data.talkData2
-    console.log(talkData2)
-    talkData2.unshift(obj)
-    this.setData({
-      talkData2,
-      comment: '' // 发送成功，清空输入框
-    })
-    this.pageUp()
-  },
+
   deleteEmoji: function() {
     const pos = this.data.cursor
     const comment = this.data.comment
@@ -339,7 +343,18 @@ Page({
       cursor: cursor
     })
   },
-
+  // 页面上推
+  pageUp(){
+    const that = this
+    let query = wx.createSelectorQuery();
+    let toolViewHeight  = this.data.toolViewHeight
+    query.selectAll('.msg-box').boundingClientRect(function (rect) {
+      that.setData({
+        scrollTop: rect[0].height + toolViewHeight
+      })
+      console.log(that.data.scrollTop)
+    }).exec();
+  },
   
   // 消息触底
   msgBottom: function () {
@@ -430,7 +445,7 @@ Page({
 
               receiveMsg.type = chatData.type; // 消息类型       
               receiveMsg.fromid = chatData.fromid; // 对方
-              let avatar = '/img/my/avatar.png'
+              let avatar = '/static/images/chat/my/avatar.png'
               receiveMsg.portrait = avatar // 头像
               let talkData = that.data.talkData
               if(chatData.fromid == that.data.toId){
@@ -481,23 +496,6 @@ Page({
         })
       },
     })
-  },
-  
-  // 监听键盘高度变化
-  bindFocus(e){
-    const that = this
-    let keyboardHeight = e.detail.height || 200
-    this.setData({
-      keyboardHeight: keyboardHeight || 200,
-      // emojiShow: false,
-      // functionShow: false
-    })
-    // let query = wx.createSelectorQuery();
-    //   query.selectAll('.msg-box').boundingClientRect(function (rect) {
-    //     that.setData({
-    //       scrollTop: rect[0].height + keyboardHeight
-    //     })
-    //   }).exec();
   },
 
   /*
@@ -629,6 +627,12 @@ Page({
       success(res) {
         var tempFilePaths = res.tempFilePaths
         console.log(tempFilePaths)
+
+        that.setData({
+          functionShow: false,
+          //toolViewHeight: 0
+        })
+
         // 上传图片至服务端
         that.uploadPic(tempFilePaths[0]);
       },
@@ -771,24 +775,28 @@ Page({
     })
   },
   onShow: function (options) {
+
+  },
+  onReady: function () {
     const that = this;
     let query = wx.createSelectorQuery();
     query.selectAll('.tools').boundingClientRect(function (rect) {
+      console.log(`toolHeight:${that.data.toolHeight}`)
       that.setData({
         toolHeight: rect[0].height
       })
     }).exec();
     query.selectAll('.menu').boundingClientRect(function (rect) {
       if(rect.length > 0){
+        console.log(`menuHeight:${that.data.menuHeight}`)
         that.setData({
           menuHeight: rect[0].height
         })
       }
     }).exec();
-    this.getSystemInfo()
-  },
-  onReady: function () {
-    this.listenRecord()
+    this.getSystemInfo();
+
+    this.listenRecord();
   },
   //页面隐藏
   onHide: function () {
