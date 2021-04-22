@@ -17,29 +17,31 @@
     refresher-triggered="{{refreshStatus}}"
     style="height: {{windowHeight-toolHeight-menuHeight-toolViewHeight}}px">
     <view class="msg-box">
-      <block wx:for="{{talkData2}}" wx:key='index'>
-        <view class="msg-item {{ item.fromid  == fromid ? 'msg-item-reverse' : '' }}" id="{{item.id}}">
-          <block wx:if="{{item.fromid == fromid}}">
-            <image class="adverse-head" src="{{from_head}}"></image>
+      <block wx:for="{{talkData}}" wx:key='index'>
+        <view class="msg-item {{ item.from_uid  == currentUser.id ? 'msg-item-reverse' : '' }}" id="{{item.id}}">
+          <block wx:if="{{item.from_uid == currentUser.id}}">
+            <image class="adverse-head" src="{{currentUser.avatar}}"></image>
           </block>
           <block wx:else>
-            <image class="adverse-head" src="{{to_head || '/img/my/avatar.png'}}"></image>
+            <image class="adverse-head" src="{{remoteUser.avatar || config.DefaultAvatarUrl}}"></image>
           </block>
-          <view class="flex-wrap flex-center textBox {{item.fromid  == fromid ? 'text-green' : 'text-default'}}">
-            <block wx:for="{{item.content}}" wx:for-item="it" wx:key="key">
-              <block wx:if="{{it.type == 1}}">
-                {{it.content}}
+          <view class="flex-wrap flex-center textBox {{item.from_uid  == currentUser.id ? 'text-green' : 'text-default'}}">
+            <block wx:if="{{item.type=='text'}}">
+              <block wx:for="{{item.content}}" wx:for-item="it" wx:key="key">
+                <block wx:if="{{it.type == 1}}">
+                  {{it.content}}
+                </block>
+                <block wx:if="{{it.type == 2}}">
+                  <view style="display: inline-block; width: {{lineHeight}}px; height: {{lineHeight}}px">
+                    <view 
+                      class="{{it.imageClass}}"
+                      style="background-image: url({{emojiSource}});transform-origin: 0 0; transform: scale({{lineHeight / 64}});"></view>
+                  </view>
+                </block>
               </block>
-              <block wx:if="{{it.type == 2}}">
-                <view style="display: inline-block; width: {{lineHeight}}px; height: {{lineHeight}}px">
-                  <view 
-                    class="{{it.imageClass}}"
-                    style="background-image: url({{emojiSource}});transform-origin: 0 0; transform: scale({{lineHeight / 64}});"></view>
-                </view>
-              </block>
-              <block wx:if="{{it.type == 3}}">
-                <image src="{{it.img.url}}" style="width: {{it.img.width}}rpx;height: {{it.img.height}}rpx" mode="aspectFit"></image>
-              </block>
+            </block>
+            <block wx:if="{{item.type=='image'}}">
+              <image src="{{item.content.url}}" style="width: {{item.content.width}}rpx;height: {{item.content.height}}rpx" mode="aspectFit" bindtap="onTapImage" data-url="{{item.content.url}}"></image>
             </block>
           </view>
         </view>
