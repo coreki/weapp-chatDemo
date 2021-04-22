@@ -53,7 +53,10 @@ Page({
     ], // 聊天内容
     uploadPic_url: '', 
     img: '',
-    currentUser:getApp().getCurrentUserInfo(),
+    currentUser:{
+      id:'1382253560489709568',
+      avatar:'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=757545797,2214471709&fm=11&gp=0.jpg'
+    },
     remoteUser:{
       id:123,
       avatar:'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2622933625,920552892&fm=26&gp=0.jpg'
