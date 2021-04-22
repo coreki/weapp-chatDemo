@@ -1,5 +1,4 @@
 
-
 //index.js
 //获取应用实例
 var recorder = wx.getRecorderManager();
@@ -8,6 +7,7 @@ const app = getApp();
 
 Page({
   data: {
+    config:config,
     isIphoneXHeight: app.globalData.isIphoneXHeight,
     picShow: false,
     safeheight: '', //安全高度,
@@ -22,110 +22,43 @@ Page({
     cursor: 0,
     talkData: [
       {
-        fromid: '123', // 发送人id
+        from_uid: '321', // 发送人id
         type: 'text', // 消息类型
-        content: '1',
-        id: 'page1'
-      },
-      {
-        fromid: '321', // 发送人id
-        type: 'text', // 消息类型
-        content: '2'
-      },
-      {
-        fromid: '123', // 发送人id
-        type: 'text', // 消息类型
-        content: '3',
-        id: 'page1'
-      },
-      {
-        fromid: '321', // 发送人id
-        type: 'text', // 消息类型
-        content: '4'
-      },
-      {
-        fromid: '123', // 发送人id
-        type: 'text', // 消息类型
-        content: '5',
-        id: 'page1'
-      },
-      {
-        fromid: '321', // 发送人id
-        type: 'text', // 消息类型
-        content: '6'
-      },
-      {
-        fromid: '123', // 发送人id
-        type: 'text', // 消息类型
-        content: '7'
-      },
-      {
-        fromid: '321', // 发送人id
-        type: 'text', // 消息类型
-        content: '8'
-      },
-      {
-        fromid: '123', // 发送人id
-        type: 'text', // 消息类型
-        content: '9'
-      },
-      {
-        fromid: '321', // 发送人id
-        type: 'text', // 消息类型
-        content: '10'
-      },
-      {
-        fromid: '123', // 发送人id
-        type: 'text', // 消息类型
-        content: '11'
-      },
-      {
-        fromid: '321', // 发送人id
-        type: 'text', // 消息类型
-        content: '12'
-      },
-      {
-        fromid: '123', // 发送人id
-        type: 'text', // 消息类型
-        content: '13'
-      },
-      {
-        fromid: '321', // 发送人id
-        type: 'text', // 消息类型
-        content: '14'
-      },
-      {
-        fromid: '123', // 发送人id
-        type: 'text', // 消息类型
-        content: '15'
-      }
-    ], // 聊天内容
-    talkData2: [
-      {
-        fromid: '321', // 发送人id
-        type: 'text', // 消息类型
-        content: '16',
         content: [
           {type: 1, content: '不告诉你'},
           {type: 2, content: "[龇牙]", imageClass: "smiley_13"}
         ]
       },
       {
-        fromid: '123', // 发送人id
+        from_uid: '1382253560489709568', // 发送人id
         type: 'text', // 消息类型
-        content: '16',
         content: [
           {type: 1, content: '今天天气怎么样？'},
           {type: 2, content: "[流泪]", imageClass: "smiley_5"}
         ]
+      },
+      {
+        from_uid: '1382253560489709568', // 发送人id
+        type: 'text', // 消息类型
+        content: [
+          {type: 2, content: "[流泪]", imageClass: "smiley_5"},
+          {type: 1, content: '手机没电'},
+        ]
+      },
+      {
+        from_uid: '123', // 发送人id
+        type: 'image', // 消息类型
+        content: {url:'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=757545797,2214471709&fm=11&gp=0.jpg',width:100,height:100},
       }
     ], // 聊天内容
     uploadPic_url: '', 
     img: '',
-    fromid: 123, // 当前用户id
-    from_head: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=757545797,2214471709&fm=11&gp=0.jpg',// 当前用户头像
-    toId: '', // 对方id
-    to_head: 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2622933625,920552892&fm=26&gp=0.jpg', // 对方头像
+    currentUser:getApp().getCurrentUserInfo(),
+    remoteUser:{
+      id:123,
+      avatar:'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2622933625,920552892&fm=26&gp=0.jpg'
+    },
+    //from_head: 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=757545797,2214471709&fm=11&gp=0.jpg',// 当前用户头像
     emojiArr: [],
     isLoad: true,//解决初试加载时emoji动画执行一次
     emojis: [],//qq、微信原始表情
@@ -270,10 +203,10 @@ Page({
   // 发送消息
   onSend() {
     const comment = this.data.comment
-    const fromid = this.data.fromid
-    let obj = {fromid: fromid, content: [...this.parseEmoji(comment)]}
-    const talkData2 = this.data.talkData2
-    console.log(talkData2)
+    const from_uid = this.data.currentUser.id
+    let obj = {from_uid: from_uid, content: [...this.parseEmoji(comment)]}
+    const talkData = this.data.talkData
+    console.log(talkData)
 
     if(comment.length == ''){
       wx.showToast({
@@ -283,9 +216,9 @@ Page({
       return;
     }
 
-    talkData2.unshift(obj)
+    talkData.unshift(obj)
     this.setData({
-      talkData2,
+      talkData,
       comment: '' // 发送成功，清空输入框
     })
     this.pageUp()
@@ -372,13 +305,13 @@ Page({
   // 消息未读
   unRead(){
     const that  = this
-    let fromid = that.data.fromid;
-    let toid = that.data.toId;
+    let from_uid = that.data.currentUser.id;
+    let toid = that.data.remoteUser.id;
     util.request({
       modules: '',
       method: 'post',
       data: {
-          fromid: fromid,
+          from_uid: from_uid,
           toid: toid
       },
       success: (result) => {
@@ -409,8 +342,8 @@ Page({
     
     wx.onSocketMessage(function (res) {
     
-      let fromid = that.data.fromid;
-      let toid = that.data.toId;
+      let from_uid = that.data.currentUser.id;
+      let toid = that.data.remoteUser.id;
       let chatData = JSON.parse(res.data);
       console.log(chatData)
       //接收服务端传过来的消息
@@ -421,18 +354,18 @@ Page({
               wx.sendSocketMessage({
                   data: JSON.stringify({
                     type: 'bind',
-                    fromid: fromid, // 自己的id
+                    from_uid: from_uid, // 自己的id
                 })
               });
               
-              let online = '{"type":online,"toid":"'+toid+'","fromid":"'+fromid+'"}';   //查看当前用户是否在线
+              let online = '{"type":online,"toid":"'+toid+'","from_uid":"'+from_uid+'"}';   //查看当前用户是否在线
               wx.sendSocketMessage(JSON.stringify(online));
               that.unRead()
               // changeNoRead();
               break;
             case "text":        //处理文字消息
               
-              // if (toid == chatData.fromid) {
+              // if (toid == chatData.from_uid) {
               //   console.log(chatData.data)
                 
               // }
@@ -444,11 +377,11 @@ Page({
               receiveMsg.content = msg; // 输入框内容
 
               receiveMsg.type = chatData.type; // 消息类型       
-              receiveMsg.fromid = chatData.fromid; // 对方
+              receiveMsg.from_uid = chatData.from_uid; // 对方
               let avatar = '/img/my/avatar.png'
               receiveMsg.portrait = avatar // 头像
               let talkData = that.data.talkData
-              if(chatData.fromid == that.data.toId){
+              if(chatData.from_uid == that.data.remoteUser.id){
                 talkData.push(receiveMsg)
                 that.setData({
                   talkData: talkData
@@ -517,7 +450,7 @@ Page({
     },200)
     // let page = that.data.page
     // this.setData({
-    //   talkData: [...this.data.talkData,...this.data.talkData2],
+    //   talkData: [...this.data.talkData,...this.data.talkData],
     //   page: page++
     // })
     // console.log(page)
@@ -535,24 +468,17 @@ Page({
   */
  
   // 发送图片信息
-  sendPic: function (width, height) {
+  sendPic: function (url,width, height) {
     const that = this;
-    let imgUrl = that.data.imgUrl;
-    let msgObj = {};
-    msgObj.url = imgUrl.url; // 图片/照片
-    msgObj.width = imgUrl.width; // 图片/照片
-    msgObj.height = imgUrl.height; // 图片/照片
-    msgObj.isMine = true; // 是否是我 
-    msgObj.type = 'img'; // 消息类型
-    msgObj.portrait = that.data.mineAvatar ?
-      that.data.mineAvatar :
-      app.globalData.userInfo.avatarUrl // 头像
+    let msg = {};
+    msg.type = 'image'; // 消息类型
+    msg.content = {url:url,width:width,height:height};
+    console.log(msg);
     let arr = [];
     let talkData = that.data.talkData;
-    arr = [msgObj, ...talkData] // 对象拼接
+    arr = [msg, ...talkData] // 对象拼接
     that.setData({
-      talkData: arr,
-      msg: msgObj
+      talkData: arr
     })
   },
   // 图片比例缩放
@@ -571,7 +497,7 @@ Page({
   uploadPic: function (tempFilePath) {
     const that = this
     let img = {};
-    const fromid = that.data.fromid;
+    const from_uid = that.data.currentUser.id;
     wx.getImageInfo({
       src: tempFilePath,
       success(res) {
@@ -582,11 +508,12 @@ Page({
           url: tempFilePath
         }
 
-        let obj = {fromid: fromid, content: [{type:3,img:img}]}
-        const talkData2 = that.data.talkData2
-        talkData2.unshift(obj)
+        let obj = {from_uid: from_uid, type:'image',content: img}
+        console.log(obj);
+        const talkData = that.data.talkData
+        talkData.unshift(obj)
         that.setData({
-          talkData2,
+          talkData,
         })
       }
     })
@@ -598,18 +525,10 @@ Page({
       success(res) {
         const data = JSON.parse(res.data)
         if (data.state === 2000) {
-          // that.setData({
-          //   imgUrl: data.data,
-          // })
           wx.getImageInfo({
             src: tempFilePath,
             success(res) {
-              that.setData({
-                'imgUrl.width': res.width,
-                'imgUrl.height': res.height,
-                'imgUrl.url': data.data,
-              })
-              that.sendPic(res.width, res.height); // 发送图片
+              that.sendPic(url,res.width, res.height); // 发送图片
             }
           })
         }
@@ -641,14 +560,14 @@ Page({
   },
 
   // 图片查看
-  imgTouch: function (res) {
-    const url = res.currentTarget.dataset.text.url
-    var current_url = 'http://106.12.121.189:6004/' + url
+  onTapImage: function (res) {
+    const url = res.currentTarget.dataset.url
+    var current_url = url
     var urls = []
     var list = this.data.talkData
     for (var index in list) {
-      if (list[index].type == 'img') {
-        urls.push('http://106.12.121.189:6004/' + list[index].url)
+      if (list[index].type == 'image') {
+        urls.push(list[index].content.url)
       }
     }
     urls = urls.reverse();
@@ -773,6 +692,8 @@ Page({
         }
       }
     })
+
+    //socketClient.onMessage('chat_private',()=>{});
   },
   onShow: function (options) {
 
